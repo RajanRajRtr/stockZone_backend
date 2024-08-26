@@ -1,11 +1,11 @@
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express");
+const mongoose = require("mongoose");
 const Cart = require("../modal/buy");
 const Product = require("../modal/product");
 const Router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 // const app = express();
 
@@ -24,7 +24,7 @@ const fs = require('fs');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = 'uploads/';
+    const uploadPath = "uploads/";
     fs.mkdirSync(uploadPath, { recursive: true }); // Ensure the uploads directory exists
     cb(null, uploadPath);
   },
@@ -50,32 +50,29 @@ Router.get("/Product-list", async (req, res) => {
   }
 });
 
-
 Router.post("/AddCart", async (req, res) => {
   try {
-    const cartItems = req.body.cartList; 
-    const number = req.body.phone; 
+    const cartItems = req.body.cartList;
+    const number = req.body.phone;
     const savedItems = [];
     for (const item of cartItems) {
-      const {
-        id,
-        productName,
-        price,
-        qty
-      } = item;
+      const { id, product_Name, price, qty } = item;
       const doc = new Cart({
-        product_id :id,
-         product_price:price,
-         product_Name:productName,
-        Quantity:qty,
-        phone_number:number,
+        product_id: id,
+
+        product_price: price,
+        product_Name: product_Name,
+        Quantity: qty,
+        phone_number: number,
       });
 
       const savedDoc = await doc.save();
       savedItems.push(savedDoc);
     }
 
-    return res.status(200).send({ message: "Cart added successfully", savedItems });
+    return res
+      .status(200)
+      .send({ message: "Cart added successfully", savedItems });
   } catch (error) {
     return res.status(400).send({
       message: "Unable to Add the Cart",
@@ -83,7 +80,6 @@ Router.post("/AddCart", async (req, res) => {
     });
   }
 });
-
 
 Router.get("/Cart-list", async (req, res) => {
   try {
@@ -99,10 +95,6 @@ Router.get("/Cart-list", async (req, res) => {
     });
   }
 });
-
-
-
-
 
 Router.delete("/delete-cart/:id", async (req, res) => {
   try {
@@ -121,7 +113,6 @@ Router.delete("/delete-cart/:id", async (req, res) => {
     });
   }
 });
-
 
 //product
 
@@ -176,23 +167,25 @@ Router.delete("/delete-cart/:id", async (req, res) => {
 
 const upload = multer({ storage: storage });
 
-Router.post("/createproduct", upload.single('imgUrl'), async (req, res) => {
+Router.post("/createproduct", upload.single("imgUrl"), async (req, res) => {
   console.log("req.body", req.body, "req.file", req.file);
   try {
-    const { productName, videoUrl, price, description,news} = req.body;
+    const { productName, videoUrl, price, description, news } = req.body;
     // const imgUrl = req.file ? req.file.path : null;
-    const imgUrl = req.file ? req.file.path.replace(/\\/g, '/') : null;
+    const imgUrl = req.file ? req.file.path.replace(/\\/g, "/") : null;
     const newProduct = new Product({
       product_Name: productName,
       imgUrl: imgUrl,
       videoUrl: videoUrl,
       price: price,
       Description: description,
-      News:news
+      News: news,
     });
 
     const savedProduct = await newProduct.save();
-    return res.status(200).send({ message: "Product added successfully", savedProduct });
+    return res
+      .status(200)
+      .send({ message: "Product added successfully", savedProduct });
   } catch (error) {
     return res.status(500).send({
       message: "Unable to add product",
@@ -200,7 +193,6 @@ Router.post("/createproduct", upload.single('imgUrl'), async (req, res) => {
     });
   }
 });
-
 
 //delete product
 
@@ -213,7 +205,9 @@ Router.delete("/delete-product/:id", async (req, res) => {
       return res.status(404).send({ message: "product item not found" });
     }
 
-    return res.status(200).send({ message: "Product item deleted successfully" });
+    return res
+      .status(200)
+      .send({ message: "Product item deleted successfully" });
   } catch (error) {
     return res.status(500).send({
       message: "Unable to delete the Product item",
@@ -221,6 +215,5 @@ Router.delete("/delete-product/:id", async (req, res) => {
     });
   }
 });
-
 
 module.exports = Router;
